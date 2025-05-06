@@ -5,6 +5,7 @@ import edu.ifmg.produtos.dtos.ProductDTO;
 import edu.ifmg.produtos.entities.Category;
 import edu.ifmg.produtos.entities.Product;
 import edu.ifmg.produtos.repository.ProductRepository;
+import edu.ifmg.produtos.resources.ProductResource;
 import edu.ifmg.produtos.services.exceptions.DatabaseException;
 import edu.ifmg.produtos.services.exceptions.ResourceNotFound;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +29,9 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAll(Pageable pageable){
         Page<Product> list = productRepository.findAll(pageable);
-        return list.map(ProductDTO::new);
+        return list.map(product -> new ProductDTO(product)
+                .add(linkTo(methodOn(ProductResource.class).findAll(null)).withSelfRel())
+                .add(linkTo(methodOn(ProductResource.class).findById(product.getId())).withRel("Get a product")));
     }
 
     @Transactional(readOnly = true)
@@ -34,6 +39,10 @@ public class ProductService {
         Optional<Product> obj = productRepository.findById(id);
         Product product = obj.orElseThrow(() -> new ResourceNotFound("Product not found " + id));
         return new ProductDTO(product);
+//                .add(linkTo(methodOn(ProductResource.class).findById(product.getId())).withSelfRel())
+//                .add(linkTo(methodOn(ProductResource.class).findAll(null)).withRel("All Products"))
+//                .add(linkTo(methodOn(ProductResource.class).update(product.getId(), null)).withRel("Update Product"))
+//                .add(linkTo(methodOn(ProductResource.class).delete(product.getId())).withRel("Delete Product"));
     }
 
     @Transactional

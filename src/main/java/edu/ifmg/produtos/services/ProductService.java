@@ -1,6 +1,8 @@
 package edu.ifmg.produtos.services;
 
+import edu.ifmg.produtos.dtos.CategoryDTO;
 import edu.ifmg.produtos.dtos.ProductDTO;
+import edu.ifmg.produtos.entities.Category;
 import edu.ifmg.produtos.entities.Product;
 import edu.ifmg.produtos.repository.ProductRepository;
 import edu.ifmg.produtos.services.exceptions.DatabaseException;
@@ -73,5 +75,7 @@ public class ProductService {
         entity.setDescription(dto.getDescription());
         entity.setPrice(dto.getPrice());
         entity.setImageUrl(dto.getImageUrl());
+
+        dto.getCategories().forEach(c -> entity.getCategories().add(new Category(c)));
     }
 }

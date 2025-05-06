@@ -1,5 +1,6 @@
 package edu.ifmg.produtos.entities;
 
+import edu.ifmg.produtos.dtos.CategoryDTO;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -26,6 +27,11 @@ public class Category {
     public Category(String name, Long id) {
         this.name = name;
         this.id = id;
+    }
+
+    public Category(CategoryDTO dto) {
+        this.name = dto.getName();
+        this.id = dto.getId();
     }
 
     public Long getId() {

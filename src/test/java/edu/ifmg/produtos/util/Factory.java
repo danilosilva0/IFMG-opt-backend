@@ -11,7 +11,8 @@ public class Factory {
         p.setName("Produto Teste");
         p.setPrice(1000);
         p.setImageUrl("https://img.com/test.png");
-        p.getCategories().add(new Category("CategoriaTeste", 60L));
+        p.setDescription("Teste");
+        p.getCategories().add(new Category("Livros", 1L));
         return p;
     }
 

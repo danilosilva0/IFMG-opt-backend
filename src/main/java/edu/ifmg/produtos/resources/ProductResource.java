@@ -1,8 +1,7 @@
 package edu.ifmg.produtos.resources;
 
-import edu.ifmg.produtos.dtos.CategoryDTO;
 import edu.ifmg.produtos.dtos.ProductDTO;
-import edu.ifmg.produtos.entities.Product;
+import edu.ifmg.produtos.dtos.ProductListDTO;
 import edu.ifmg.produtos.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -38,12 +37,29 @@ public class ProductResource {
         return ResponseEntity.ok().body(products);
     }
 
+    @GetMapping(value = "/paged", produces = "application/json")
+    @Operation(
+            description = "Get all products paged",
+            summary = "Get all products paged",
+            responses = {
+                    @ApiResponse(description = "Ok", responseCode = "200"),
+            }
+    )
+    public ResponseEntity<Page<ProductListDTO>> findAllPaged (
+            Pageable pageable,
+            @RequestParam(value = "categoryId", defaultValue = "0") String categoryId,
+            @RequestParam(value = "name", defaultValue = "") String name
+    ) {
+        Page<ProductListDTO> products = productService.findAllPaged(name, categoryId, pageable);
+        return ResponseEntity.ok().body(products);
+    }
+
     @GetMapping(value = "/{id}", produces = "application/json")
     @Operation(
             description = "Get a product",
             summary = "Get a product",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Ok"),
+                    @ApiResponse(responseCode = "200", description = "OK"),
                     @ApiResponse(responseCode = "404", description = "Not Found"),
             }
     )
@@ -66,7 +82,8 @@ public class ProductResource {
     )
     public ResponseEntity<ProductDTO> insert(@Valid @RequestBody ProductDTO dto) {
         dto = productService.insert(dto);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}").buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
 
@@ -76,15 +93,15 @@ public class ProductResource {
             description = "Update a product",
             summary = "Update a product",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Product updated"),
+                    @ApiResponse(responseCode = "200", description = "OK"),
                     @ApiResponse(responseCode = "400", description = "Bad Request"),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "404", description = "Not Found"),
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
+                    @ApiResponse(responseCode = "404", description = "Not Found"),
             }
     )
     public ResponseEntity<ProductDTO> update(@PathVariable Long id, @Valid @RequestBody ProductDTO dto){
-        dto = productService.update(dto, id);
+        dto = productService.update(id, dto);
         return ResponseEntity.ok().body(dto);
     }
 
@@ -94,11 +111,11 @@ public class ProductResource {
             description = "Delete product",
             summary = "Delete product",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Ok"),
+                    @ApiResponse(responseCode = "200", description = "OK"),
                     @ApiResponse(responseCode = "400", description = "Bad Request"),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "404", description = "Not Found"),
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
+                    @ApiResponse(responseCode = "404", description = "Not Found"),
             }
     )
     public ResponseEntity<Void> delete(@PathVariable Long id){

@@ -1,6 +1,7 @@
 package edu.ifmg.produtos.services;
 
 import edu.ifmg.produtos.dtos.ProductDTO;
+import edu.ifmg.produtos.dtos.ProductListDTO;
 import edu.ifmg.produtos.entities.Product;
 import edu.ifmg.produtos.repository.ProductRepository;
 import edu.ifmg.produtos.resources.ProductResource;
@@ -22,7 +23,7 @@ import java.util.Optional;
 @Service
 public class ProductService {
 
-    @Autowired //Para não precisar instanciar o repositório manualmente
+    @Autowired //Pra não precisar instanciar o repositório manualmente
     private ProductRepository productRepository;
 
     @Transactional(readOnly = true)
@@ -34,6 +35,10 @@ public class ProductService {
                 .add(linkTo(methodOn(ProductResource.class).findById(product.getId())).withRel("Get a product"))
         );
 
+    }
+
+    public Page<ProductListDTO> findAllPaged (String name, String categoryId, Pageable pageable) {
+        return null;
     }
 
     @Transactional(readOnly = true)
@@ -70,7 +75,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDTO update(ProductDTO dto, Long id){
+    public ProductDTO update(Long id, ProductDTO dto){
 
         try{
             Product entity = productRepository.getReferenceById(id);
@@ -90,6 +95,7 @@ public class ProductService {
 
     @Transactional
     public void delete(Long id){
+
         if (!productRepository.existsById(id)){
             throw new ResourceNotFound("Product not found" + id);
         }

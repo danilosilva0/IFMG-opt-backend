@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -52,6 +53,7 @@ public class ProductResource {
     }
 
     @PostMapping(produces = "application/json")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @Operation(
             description = "Create a new product",
             summary = "Create a new product",
@@ -69,6 +71,7 @@ public class ProductResource {
     }
 
     @PutMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @Operation(
             description = "Update a product",
             summary = "Update a product",
@@ -86,6 +89,7 @@ public class ProductResource {
     }
 
     @DeleteMapping(value = "/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @Operation(
             description = "Delete product",
             summary = "Delete product",

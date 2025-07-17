@@ -11,6 +11,7 @@ import edu.ifmg.produtos.repository.UserRepository;
 import edu.ifmg.produtos.services.exceptions.DatabaseException;
 import edu.ifmg.produtos.services.exceptions.ResourceNotFound;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -37,6 +38,7 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
 
     @Transactional(readOnly = true)
     public Page<UserDTO> findAll(Pageable pageable) {
@@ -119,5 +121,16 @@ public class UserService implements UserDetailsService {
         }
 
         return user;
+    }
+
+    public UserDTO signup(UserInsertDTO dto) {
+
+        User user = new User();
+        copyDtoToEntity(dto, user);
+        Role role = roleRepository.findByAuthority("ROLE_OPERATOR");
+        user.getRoles().add(role);
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user = repository.save(user);
+        return new UserDTO(user);
     }
 }

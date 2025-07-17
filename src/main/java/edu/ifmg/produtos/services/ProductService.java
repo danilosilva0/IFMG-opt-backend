@@ -44,7 +44,6 @@ public class ProductService {
     public Page<ProductListDTO> findAllPaged (String name, String categoryId, Pageable pageable) {
 
         List<Long> categoriesId = null;
-
         if (!categoryId.equals("0")) {
             categoriesId =
                     Arrays.stream(categoryId.split(","))
@@ -52,8 +51,9 @@ public class ProductService {
                             .toList();
         }
 
-        Page<ProductProjection> page =
-                productRepository.searchProducts(categoriesId, name, pageable);
+        Page<ProductProjection> page = categoriesId != null
+                ? productRepository.searchProductsWithCategories(categoriesId, name, pageable)
+                : productRepository.searchProductsWithoutCategories(name, pageable);
 
         List<ProductListDTO> dtos = page.stream().map( p -> new ProductListDTO(p)).toList();
 
